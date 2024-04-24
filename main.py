@@ -4,11 +4,21 @@ Last Edited: 24/04/2024
 """
 import time
 import sys
+import os
 from selenium import webdriver
 from pages.login_page import LoginPage
 from pages.course_page import CoursePage
 from pages.profile_page import ProfilePage
-import config
+try:
+    import config
+except ImportError:
+    print("Config file does not exist, creating it now.")
+    with open(os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), "config.py"),
+        "w", encoding="utf8"
+    ) as config:
+        config.write("\"\"\" Sololearn account credentials & Other configurations \"\"\"\nEMAIL = ''\nPASSWORD = ''\n")
+    sys.exit(1)
 
 EMAIL = config.EMAIL
 PASSWORD = config.PASSWORD
