@@ -29,7 +29,7 @@ if EMAIL == "" or PASSWORD == "":
 
 options = webdriver.ChromeOptions()
 #options.add_argument("--headless=new")
-options.add_argument("window-size=1400,1000")
+options.add_argument("window-size=1450,1050")
 
 driver = webdriver.Chrome(options=options)
 driver.execute_cdp_cmd("Network.setUserAgentOverride",
