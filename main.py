@@ -1,8 +1,9 @@
 """
 Author: s3a6m9
-Last Edited: 22/04/2024
+Last Edited: 24/04/2024
 """
 import time
+import sys
 from selenium import webdriver
 from pages.login_page import LoginPage
 from pages.course_page import CoursePage
@@ -12,8 +13,13 @@ import config
 EMAIL = config.EMAIL
 PASSWORD = config.PASSWORD
 
+if EMAIL == "" or PASSWORD == "":
+    print("Please add an email/password to config.py")
+    sys.exit(1)
+
 options = webdriver.ChromeOptions()
 #options.add_argument("--headless=new")
+options.add_argument("window-size=1400,1000")
 
 driver = webdriver.Chrome(options=options)
 driver.execute_cdp_cmd("Network.setUserAgentOverride",
@@ -28,6 +34,7 @@ course_page = CoursePage(driver)
 login_page.open_page()
 input("Press enter once recaptcha is complete & the first lesson is introduction to python")
 login_page.sign_in(EMAIL, PASSWORD)
+print("Signed in")
 time.sleep(2)
 login_page.set_site_preferences()
 time.sleep(2)

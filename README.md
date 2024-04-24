@@ -1,6 +1,6 @@
 # Sololearn Bot
 The Sololearn Bot is a python program used to farm bits and XP.  
-Currently it can farm about 175 bits and over 350 xp every 10 minutes.
+Currently it can farm about 175 bits and over 1000 xp every 10 minutes.
 
 ## Installation & Setup
 Install the required dependencies:
