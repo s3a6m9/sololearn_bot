@@ -31,6 +31,10 @@ class BasePage:
         except NoSuchElementException:
             return False
 
+    def disable_onbeforeunload(self):
+        """ Used to prevent 'unsaved changes may be lost' alerts from the browser so it doesn't hang when quitting. """
+        self.driver.execute_script("window.onbeforeunload = function() {};")
+
     def interact(self, xpath, action='click', text=None, retry=False):
         """Performs an interaction with an element located by xpath.
 
@@ -48,8 +52,22 @@ class BasePage:
             TimeoutException: If the element is not found within the timeout period.
             NoSuchElementException: If the element is not found.
             ElementNotInteractableException: If the element cannot be interacted with.
+
+        The disable_onbeforeunload function is required so the driver can quit gracefully,
+        instead of quitting the Python script and keeping the WebDriver process running due to
+        a dialogue that opens in the course window. Furthermore, because the JS scripts with
+        the event listener are loaded at an unknown time, it is needed at the start, and at
+        the end of the interact() to allow the window to close gracefully most of the time.
+        This is not ideal as the event listener still has a chance to be added between the
+        disable_onbeforeunload and the webdriverwait, which could still cause the dialogue
+        to open, preventing the WebDriver process from closing. In addition to this, if there
+        is no interaction with the page and the driver tries to close, and it prompted with
+        the dialogue, it will not close the WebDriver process. This can be improved by checking
+        if the pages are loaded, but given the low quality and unreliability of selenium, this
+        will be used for the forseable future.
         """
         try:
+            self.disable_onbeforeunload()
             element = WebDriverWait(self.driver, self.timeout).until(
                 EC.presence_of_element_located((By.XPATH, xpath))
             )
@@ -63,6 +81,7 @@ class BasePage:
                     raise ValueError("Text must be provided for 'send_keys' action.")
             else:
                 raise ValueError(f"Invalid action '{action}'. Must be 'click' or 'send_keys'.")
+            self.disable_onbeforeunload()
         except (
             TimeoutException, NoSuchElementException,
             ElementNotInteractableException, ElementClickInterceptedException

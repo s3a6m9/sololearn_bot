@@ -28,26 +28,30 @@ if EMAIL == "" or PASSWORD == "":
     sys.exit(1)
 
 options = webdriver.ChromeOptions()
-#options.add_argument("--headless=new")
-options.add_argument("window-size=1450,1050")
+chrome_args = [
+"--window-size=1000,1050",
+"--window-position=0,0",
+# "--headless=new",  # not tested
+]
+for arg in chrome_args:
+    options.add_argument(arg)
 
 driver = webdriver.Chrome(options=options)
 driver.execute_cdp_cmd("Network.setUserAgentOverride",
                       { "userAgent": driver.execute_script(
                           "return navigator.userAgent").replace("Headless", "")})
 
-
 login_page = LoginPage(driver)
 profile_page = ProfilePage(driver)
 course_page = CoursePage(driver)
 
 login_page.open_page()
-input("Press enter once recaptcha is complete & the first lesson is introduction to python")
-login_page.sign_in(EMAIL, PASSWORD)
-print("Signed in")
 time.sleep(2)
 login_page.set_site_preferences()
+input("Press enter once recaptcha is complete & introduction to python is in managed courses")
+login_page.sign_in(EMAIL, PASSWORD)
 time.sleep(2)
+print("Should be logged in.")
 
 while True:
     try:
@@ -60,6 +64,7 @@ while True:
         course_page.do_writing_code_lesson_ai()
         time.sleep(1)
     except KeyboardInterrupt:
+        print("\nKeyboardInterrupt detected, quitting.")
         driver.quit()
         break
     except Exception as e:
